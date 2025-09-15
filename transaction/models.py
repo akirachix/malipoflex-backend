@@ -62,7 +62,6 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
-        """Validate required fields based on account_type"""
         if self.account_type in ['savings', 'loan_repayment', 'pension_contribution'] and not self.member:
             raise ValidationError("Member is required for savings, loan repayment, or pension contribution.")
         if self.account_type == 'loan_disbursement' and not self.manager:
