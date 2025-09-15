@@ -8,3 +8,5 @@ packaging==25.0
 pathspec==0.12.1
 platformdirs==4.4.0
 sqlparse==0.5.3
+python-dateutil
+
