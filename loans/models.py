@@ -93,7 +93,7 @@ def process_repayment_payment(self, amount):
 
     if self.amount_remaining <= 0:
         self.amount_remaining = 0
-        self.status = 'completed'
+        self.status='completed'
         self.payment_date = timezone.now()
 
     self.save()
