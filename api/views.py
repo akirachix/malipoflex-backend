@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework import viewsets
 from users.models import User
+from .serializer import UserSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import (
     UserRegisterSerializer,
@@ -13,7 +14,7 @@ from .serializers import (
     ResetPasswordSerializer,
     VerifyOTPSerializer,
 )
-from .serializers import UserSerializer
+
 
 
 class UserViewSet(viewsets.ModelViewSet):
