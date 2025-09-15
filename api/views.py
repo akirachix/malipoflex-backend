@@ -5,13 +5,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework import viewsets
 from users.models import User
+from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import UserRegisterSerializer, UserLoginSerializer, UserProfileSerializer,ForgotPasswordSerializer,ResetPasswordSerializer,VerifyOTPSerializer
 from .serializers import UserSerializer
+
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user_type']
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
