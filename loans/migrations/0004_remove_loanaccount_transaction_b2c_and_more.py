@@ -6,7 +6,5 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('loans', '0003_loanaccount_transaction_b2c_and_more'),
+        ("loans", "0003_loanaccount_transaction_b2c_and_more"),
     ]
-
- 
