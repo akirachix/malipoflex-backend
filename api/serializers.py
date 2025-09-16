@@ -45,7 +45,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
     user_type = serializers.ChoiceField(
-        choices=[("member", "Member"), ("manager", "Manager")]
+        choices=[("Member","member"), ("Manager","manager")]
     )
 
     class Meta:
