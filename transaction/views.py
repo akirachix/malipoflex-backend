@@ -49,56 +49,70 @@ class STKPushView(APIView):
 def daraja_callback(request):
     try:
         data = json.loads(request.body)
-        result_code = data.get('Body', {}).get('stkCallback', {}).get('ResultCode')
-        checkout_request_id = data.get('Body', {}).get('stkCallback', {}).get('CheckoutRequestID')
-
+        merchant_request_id = data.get('MerchantRequestID')
+        checkout_request_id = data.get('CheckoutRequestID')
+        response_code = data.get('ResponseCode')
+        response_description = data.get('ResponseDescription')
+        print("STK PUSH CALLBACK RECEIVED:", data)
         if not checkout_request_id:
-            return JsonResponse({"ResultCode": 1, "ResultDesc": "Missing CheckoutRequestID"}, status=400)
+            print("Missing CheckoutRequestID in callback")
+            return JsonResponse({
+                "ResultCode": 1,
+                "ResultDesc": "Missing CheckoutRequestID"
+            }, status=200)
 
         trans = Transaction.objects.filter(checkout_request_id=checkout_request_id).first()
         if not trans:
-            return JsonResponse({"ResultCode": 1, "ResultDesc": "Transaction not found"}, status=404)
-
-        if result_code == 0:
+            print(f"Transaction not found for CheckoutRequestID: {checkout_request_id}")
+            return JsonResponse({
+                "ResultCode": 1,
+                "ResultDesc": "Transaction not found"
+            }, status=200) 
+        if response_code == "0":
             trans.payment_transaction_status = 'success'
             trans.completed_at = timezone.now()
         else:
             trans.payment_transaction_status = 'failed'
-
+            trans.completed_at = timezone.now()
         trans.save()
-
-        if trans.account_type == 'loan_repayment' and result_code == 0:
-            from loans.models import LoanRepayment, LoanAccount
+        if trans.account_type == 'savings' and response_code == "0":
+            contribution = SavingsContribution.objects.filter(transaction_id_c2b=trans).first()
+            if contribution:
+                contribution.completed_at = timezone.now()
+                contribution.save()
+                savings = contribution.saving
+                savings.member_account_balance += contribution.vsla_amount
+                savings.save()
+                print(f"Savings updated for {savings.member.first_name} - Added {contribution.vsla_amount}")
+        elif trans.account_type == 'loan_repayment' and response_code == "0":
             repayment = LoanRepayment.objects.filter(transaction=trans).first()
             if repayment:
                 loan = repayment.loan
                 loan.total_loan_repaid += repayment.loan_amount_repaid
                 loan.save()
-
                 if loan.total_loan_repaid >= loan.calculate_total_repayment():
                     loan.loan_status = 'COMPLETED'
                     loan.save()
+                    print(f"Loan {loan.id} marked as COMPLETED")
+        return JsonResponse({
+            "ResultCode": 0,
+            "ResultDesc": "Success"
+        }, status=200)
 
-                print(f"Loan {loan.id} repayment recorded. Total repaid: {loan.total_loan_repaid}")
-
-        elif trans.account_type == 'savings' and result_code == 0:
-            from savings.models import SavingsContribution, SavingsAccount
-            contribution = SavingsContribution.objects.filter(transaction_id_c2b=trans).first()
-            if contribution:
-                contribution.completed_at = timezone.now()
-                contribution.save()
-
-                savings = contribution.saving
-                savings.member_account_balance += contribution.vsla_amount
-                savings.save()
-
-                print(f"Savings updated for {savings.member.first_name}")
-
-        return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
-
+    except json.JSONDecodeError:
+        print("Invalid JSON in callback")
+        return JsonResponse({
+            "ResultCode": 1,
+            "ResultDesc": "Invalid JSON"
+        }, status=200)
     except Exception as e:
-        print(f"Callback Error: {str(e)}")
-        return JsonResponse({"ResultCode": 1, "ResultDesc": "Internal Error"}, status=500)
+        print(f"Unexpected error in callback: {str(e)}")
+        return JsonResponse({
+            "ResultCode": 1,
+            "ResultDesc": "Internal Error"
+        }, status=200)
+
+
 
 
 
