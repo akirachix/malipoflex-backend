@@ -6,6 +6,8 @@ class LoanAccountSerializer(serializers.ModelSerializer):
         model = LoanAccount
         fields = '__all__'
 
+
+
 class GuarantorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guarantor
@@ -15,3 +17,17 @@ class LoanRepaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = LoanRepayment
         fields = '__all__'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
