@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from savings.models import SavingsAccount, SavingsContribution
 from vsla.models import VSLA_Account
-# from users.models import User
+
 
 class SavingsAccountSerializer(serializers.ModelSerializer):
  class Meta:

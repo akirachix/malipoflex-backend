@@ -1,7 +1,5 @@
-# api/views.py
 
 from rest_framework import viewsets
-from users.models import Member
 from savings.models import SavingsAccount
 from savings.models import SavingsContribution
 from vsla.models import VSLA_Account
