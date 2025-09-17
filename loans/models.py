@@ -88,7 +88,7 @@ class LoanAccount(models.Model):
     def __str__(self):
         return f"Loan for {self.member.first_name} - {self.requested_amount}"
 
-    def calculate_total_interest(self):
+    def calculate_total_interest(self,obj):
         years = self.timeline_months / 12
         return (self.requested_amount * self.interest_rate * years) / 100
 

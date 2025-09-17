@@ -20,7 +20,7 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
 from .serializers import PensionSerializer, PolicySerializer
-from pension.models import Pension, PensionAccount
+from pension.models import Pension_provider, PensionAccount
 from policy.models import Policy
 from rest_framework.authtoken.models import Token
 from django_filters.rest_framework import DjangoFilterBackend
@@ -143,7 +143,7 @@ class GuarantorViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
-def expire_guarantors_manual(request):
+def expire_guarantors_manual(GenericAPIView):
     
     expired_count = Guarantor.objects.filter(
         status='Pending',
@@ -287,7 +287,7 @@ class VSLAAccountViewSet(viewsets.ModelViewSet):
 
 
 class PensionViewSet(viewsets.ModelViewSet):
-    queryset = Pension.objects.all()
+    queryset = Pension_provider.objects.all()
     serializer_class = PensionSerializer
 
 
@@ -295,7 +295,7 @@ class PensionViewSet(viewsets.ModelViewSet):
 
 class PensionProviderListView(generics.ListAPIView):
     serializer_class = PensionSerializer
-    queryset = Pension.objects.filter(status='active')
+    queryset = Pension_provider.objects.filter(status='active')
 
 
 class PolicyViewSet(viewsets.ModelViewSet):
