@@ -1,15 +1,14 @@
 from django.db import models
 from django.utils import timezone
-from users.models import User
-from transaction.models import Transaction
-from django.db import models
-from django.utils import timezone
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from users.models import User
 from transaction.models import Transaction
 
+
 class LoanAccount(models.Model):
+    loan_id = models.BigAutoField(primary_key=True)  
+
     loan_type_choices = [
         ("emergency", "Emergency"),
         ("personal", "Personal"),
@@ -68,10 +67,8 @@ class LoanAccount(models.Model):
     def clean(self):
         from django.core.exceptions import ValidationError
         from savings.models import SavingsAccount
-
         if self.pk:
             return
-
         try:
             savings = self.member.savings_account
             max_allowed = savings.member_account_balance * 3
@@ -91,58 +88,17 @@ class LoanAccount(models.Model):
     def __str__(self):
         return f"Loan for {self.member.first_name} - {self.requested_amount}"
 
-
-    def calculate_total_interest(self):
-        
-        years = self.timeline_months / 12
-        return (self.requested_amount * self.ANNUAL_INTEREST_RATE * years) / 100
-
-    def calculate_total_repayment(self):
-        
-        return self.requested_amount + self.calculate_total_interest()
-
-
-    def clean(self):
-        from django.core.exceptions import ValidationError
-        from savings.models import SavingsAccount
-
-        if self.pk:
-            return
-        try:
-            savings = self.member.savings_account
-            max_allowed = savings.member_account_balance * 3
-            if self.requested_amount > max_allowed:
-                raise ValidationError(
-                    f"You can only borrow up to 3x your savings (KES {max_allowed:.2f}). "
-                    f"Your current savings: KES {savings.member_account_balance:.2f}"
-                )
-        except SavingsAccount.DoesNotExist:
-            raise ValidationError(
-                "You must have a savings account to apply for a loan."
-            )
-
-    def save(self, *args, **kwargs):
-        if (
-            self.loan_status == "APPROVED"
-            and not self.repayment_due_date
-            and self.approved_at
-        ):
-            self.repayment_due_date = self.approved_at + relativedelta(
-                months=self.timeline_months
-            )
-
-    def __str__(self):
-        return f"Loan for {self.member.first_name} - {self.requested_amount}"
-
     def calculate_total_interest(self):
         years = self.timeline_months / 12
-        return (self.requested_amount * self.ANNUAL_INTEREST_RATE * years) / 100
+        return (self.requested_amount * self.interest_rate * years) / 100
 
     def calculate_total_repayment(self):
         return self.requested_amount + self.calculate_total_interest()
 
 
 class Guarantor(models.Model):
+    guarantor_id = models.BigAutoField(primary_key=True)  
+
     loan = models.ForeignKey(LoanAccount, on_delete=models.CASCADE, related_name='guarantors')
     member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='guaranteed_loans')
     guarantor_name = models.CharField(max_length=100)
@@ -162,6 +118,8 @@ class Guarantor(models.Model):
 
 
 class LoanRepayment(models.Model):
+    repayment_id = models.BigAutoField(primary_key=True) 
+
     loan = models.ForeignKey(LoanAccount, on_delete=models.CASCADE, related_name='repayments')
     loan_amount_repaid = models.DecimalField(max_digits=10, decimal_places=2)
     loan_repayment_status = models.CharField(max_length=10, choices=[
