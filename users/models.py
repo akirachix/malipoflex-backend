@@ -42,6 +42,8 @@ class User(AbstractUser):
     kra_pin = models.CharField(max_length=100, unique=True, null=True, blank=True)
     next_of_kin_name = models.CharField(max_length=100, null=True, blank=True)
     next_of_kin_id = models.CharField(max_length=100, null=True, blank=True)
+    firebase_token = models.CharField(max_length=512, null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     objects = UserManager()
 
