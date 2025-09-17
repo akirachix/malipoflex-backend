@@ -1,5 +1,5 @@
 """
-URL configuration for malipoflex project.
+URL configuration for api project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -16,25 +16,30 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from rest_framework.authtoken.views import obtain_auth_token
+from django.contrib import admin
 from django.urls import path, include
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularRedocView,
-    SpectacularSwaggerView,
-)
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/", include("api.urls")),
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path(
-        "api/schema/swagger-ui/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
-        name="swagger-ui",
-    ),
-    path(
-        "api/schema/redoc/",
-        SpectacularRedocView.as_view(url_name="schema"),
-        name="redoc",
-    ),
+    path('admin/', admin.site.urls),
+    path('api/', include('api.urls')),
+    path('api/', include('api.urls')), 
+    path('', include('transaction.urls')), 
+    path('api/token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    
 ]
+
+
+
+  
+     
+ 
+
+
+
+
+
