@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Pension_provider, PensionAccount
+from .models import PensionProvider, PensionAccount
 
-admin.site.register(Pension_provider)
+admin.site.register(PensionProvider)
 admin.site.register(PensionAccount)

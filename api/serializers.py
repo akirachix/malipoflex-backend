@@ -3,7 +3,7 @@ from loans.models import LoanAccount, LoanRepayment, Guarantor
 from transaction.models import Transaction
 from savings.models import SavingsAccount, SavingsContribution
 from vsla.models import VSLA_Account
-from pension.models import Pension_provider, PensionAccount
+from pension.models import PensionProvider, PensionAccount
 from policy.models import Policy
 from django.contrib.auth import authenticate
 from users.models import User
@@ -14,7 +14,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from datetime import timedelta
 from django.conf import settings
-from pension.models import PensionAccount, Pension_provider
+from pension.models import PensionAccount, PensionProvider
 
 
 
@@ -355,13 +355,13 @@ class VSLAAccountSerializer(serializers.ModelSerializer):
 
 class PensionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Pension_provider
+        model = PensionProvider
         fields = ['id', 'name', 'payBill_number', 'status']
 
 class PensionAccountSerializer(serializers.ModelSerializer):
     provider_name = serializers.CharField(source='provider.name', read_only=True)
     provider = serializers.PrimaryKeyRelatedField(
-        queryset=Pension_provider.objects.filter(status='active'),
+        queryset=PensionProvider.objects.filter(status='active'),
         required=False,
         allow_null=True
     )

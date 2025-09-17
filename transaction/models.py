@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from pension.models import Pension_provider 
+from pension.models import PensionProvider 
 
 class Transaction(models.Model):
     TRANSACTION_TYPE_CHOICES = [
@@ -49,7 +49,7 @@ class Transaction(models.Model):
     payment_transaction_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='initiated')
     callback_url = models.CharField(max_length=225, blank=True)
     provider = models.ForeignKey(
-        Pension_provider,
+        PensionProvider,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

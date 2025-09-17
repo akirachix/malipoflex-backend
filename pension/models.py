@@ -1,7 +1,7 @@
 from django.db import models
 from users.models import User
 
-class Pension_provider(models.Model):    
+class PensionProvider(models.Model):    
     STATUS_CHOICES = ['active', 'inactive'] 
     name = models.CharField(max_length=100)
     payBill_number = models.CharField(max_length=20)
@@ -19,7 +19,7 @@ class PensionAccount(models.Model):
     is_opted_in = models.BooleanField(default=False)
     contribution_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     provider = models.ForeignKey(
-        Pension_provider, 
+        PensionProvider, 
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True,

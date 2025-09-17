@@ -9,17 +9,17 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 
 router = DefaultRouter()
-router.register(r'loan-accounts', LoanAccountViewSet)
+router.register(r'loanAccounts', LoanAccountViewSet)
 router.register(r'guarantors', GuarantorViewSet)
-router.register(r'loan-repayments', LoanRepaymentViewSet)
+router.register(r'loanRepayments', LoanRepaymentViewSet)
 router.register(r'users', UserViewSet, basename='user')
-router.register(r'pension_provider', PensionViewSet)
+router.register(r'pensionProvider', PensionViewSet)
 router.register(r'policies', PolicyViewSet)
 router.register(r'transactions', TransactionViewSet, basename='transaction')
-router.register(r"savings-accounts", views.SavingsAccountViewSet, basename="savingsaccount")
-router.register(r"savings-contributions", views.SavingsContributionViewSet, basename="savingscontribution",)
-router.register(r"vsla-accounts", views.VSLAAccountViewSet, basename="vslaaccount")
-router.register(r"pension-accounts", views.PensionAccountViewSet, basename="pensionaccount")
+router.register(r"savingsAccounts", views.SavingsAccountViewSet, basename="savingsaccount")
+router.register(r"savingsContributions", views.SavingsContributionViewSet, basename="savingscontribution",)
+router.register(r"vslaAccounts", views.VSLAAccountViewSet, basename="vslaaccount")
+router.register(r"pensionAccounts", views.PensionAccountViewSet, basename="pensionaccount")
 
 
 urlpatterns = router.urls
@@ -31,11 +31,11 @@ urlpatterns = [
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/profile/', ProfileView.as_view(), name='profile'),
-    path('api/forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
-    path('api/verify-code/', VerifyOTPView.as_view(), name='verify-code'),
-    path('api/reset-password/', ResetPasswordView.as_view(), name='reset-password'),    
-    path('api/reset-password/', ResetPasswordView.as_view(), name='reset-password'),
-    path('api/expire-guarantors/', views.expire_guarantors_manual, name='expire_guarantors'), 
+    path('api/forgotPassword/', ForgotPasswordView.as_view(), name='forgot-password'),
+    path('api/verifyCode/', VerifyOTPView.as_view(), name='verify-code'),
+    path('api/resetPassword/', ResetPasswordView.as_view(), name='reset-password'),    
+    path('api/resetPassword/', ResetPasswordView.as_view(), name='reset-password'),
+    path('api/expireGuarantors/', views.expire_guarantors_manual, name='expire_guarantors'), 
 ]
 
 
