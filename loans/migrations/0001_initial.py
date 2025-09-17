@@ -16,46 +16,125 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='LoanAccount',
+            name="LoanAccount",
             fields=[
-                ('loan_id', models.AutoField(primary_key=True, serialize=False)),
-                ('requested_amount', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('loan_status', models.CharField(choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')], max_length=20)),
-                ('total_loan_repaid', models.DecimalField(decimal_places=2, default=0, max_digits=10)),
-                ('interest_rate', models.DecimalField(decimal_places=2, max_digits=5)),
-                ('timeline_months', models.IntegerField()),
-                ('requested_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('approved_at', models.DateTimeField(blank=True, null=True)),
-                ('disbursed_at', models.DateTimeField(blank=True, null=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('manager', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='managed_loans', to=settings.AUTH_USER_MODEL)),
-                ('member', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='loans', to=settings.AUTH_USER_MODEL)),
+                ("loan_id", models.AutoField(primary_key=True, serialize=False)),
+                (
+                    "requested_amount",
+                    models.DecimalField(decimal_places=2, max_digits=10),
+                ),
+                (
+                    "loan_status",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Approved", "Approved"),
+                            ("Rejected", "Rejected"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "total_loan_repaid",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=10),
+                ),
+                ("interest_rate", models.DecimalField(decimal_places=2, max_digits=5)),
+                ("timeline_months", models.IntegerField()),
+                (
+                    "requested_at",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("approved_at", models.DateTimeField(blank=True, null=True)),
+                ("disbursed_at", models.DateTimeField(blank=True, null=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "manager",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="managed_loans",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "member",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="loans",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LoanGuarantor',
+            name="LoanGuarantor",
             fields=[
-                ('guarantor_id', models.AutoField(primary_key=True, serialize=False)),
-                ('guarantor_name', models.CharField(max_length=100)),
-                ('guarantor_phone_number', models.CharField(max_length=20)),
-                ('status', models.CharField(choices=[('Approved', 'Approved'), ('Rejected', 'Rejected'), ('Pending', 'Pending')], max_length=10)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('responded_at', models.DateTimeField(blank=True, null=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('loan', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='guarantors', to='loans.loanaccount')),
-                ('member', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='guaranteed_loans', to=settings.AUTH_USER_MODEL)),
+                ("guarantor_id", models.AutoField(primary_key=True, serialize=False)),
+                ("guarantor_name", models.CharField(max_length=100)),
+                ("guarantor_phone_number", models.CharField(max_length=20)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("Approved", "Approved"),
+                            ("Rejected", "Rejected"),
+                            ("Pending", "Pending"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("responded_at", models.DateTimeField(blank=True, null=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "loan",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="guarantors",
+                        to="loans.loanaccount",
+                    ),
+                ),
+                (
+                    "member",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="guaranteed_loans",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LoanRepayment',
+            name="LoanRepayment",
             fields=[
-                ('repayment_id', models.AutoField(primary_key=True, serialize=False)),
-                ('loan_amount_repaid', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('loan_repayment_status', models.CharField(choices=[('Pending', 'Pending'), ('Completed', 'Completed'), ('Overdue', 'Overdue')], max_length=10)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('loan', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='repayments', to='loans.loanaccount')),
+                ("repayment_id", models.AutoField(primary_key=True, serialize=False)),
+                (
+                    "loan_amount_repaid",
+                    models.DecimalField(decimal_places=2, max_digits=10),
+                ),
+                (
+                    "loan_repayment_status",
+                    models.CharField(
+                        choices=[
+                            ("Pending", "Pending"),
+                            ("Completed", "Completed"),
+                            ("Overdue", "Overdue"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "loan",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="repayments",
+                        to="loans.loanaccount",
+                    ),
+                ),
             ],
         ),
     ]

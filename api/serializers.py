@@ -14,7 +14,8 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from datetime import timedelta
 from django.conf import settings
-from savings.models import SavingsContribution
+
+
 
 class LoanAccountSerializer(serializers.ModelSerializer):
     total_interest = serializers.SerializerMethodField()
@@ -22,7 +23,8 @@ class LoanAccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LoanAccount
-        fields = '__all__'
+        fields = "__all__"
+
 
     def get_total_interest(self, obj):
         
@@ -61,7 +63,8 @@ class LoanAccountSerializer(serializers.ModelSerializer):
 class GuarantorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guarantor
-        fields = '__all__'
+        fields = "__all__"
+
 
 
 class LoanRepaymentSerializer(serializers.ModelSerializer):
@@ -278,11 +281,6 @@ class SavingsAccountSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-
-
 class SavingsContributionSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -407,3 +405,4 @@ class PolicySerializer(serializers.ModelSerializer):
         model = Policy
         fields = '__all__'
 
+        fields = "__all__"
