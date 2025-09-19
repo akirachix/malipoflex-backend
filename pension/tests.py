@@ -25,6 +25,7 @@ class PensionProviderModelTests(TestCase):
 
 
 class PensionAccountModelTests(TestCase):
+    
 
     def setUp(self):
         self.user = User.objects.create_user(
