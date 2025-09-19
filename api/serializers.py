@@ -18,7 +18,6 @@ from pension.models import PensionAccount, PensionProvider
 from decimal import Decimal
 
 
-
 class LoanAccountSerializer(serializers.ModelSerializer):
     total_interest = serializers.SerializerMethodField()
     total_repayment = serializers.SerializerMethodField()
@@ -65,7 +64,7 @@ class LoanAccountSerializer(serializers.ModelSerializer):
 class GuarantorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guarantor
-        fields = "__all__"
+        fields = ['id', 'loan']
 
 
 
