@@ -15,6 +15,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.conf import settings
 from pension.models import PensionAccount, PensionProvider
+from decimal import Decimal
 
 
 
@@ -29,8 +30,8 @@ class LoanAccountSerializer(serializers.ModelSerializer):
 
     def get_total_interest(self, obj):
         
-        years = obj.timeline_months / 12
-        return (obj.requested_amount * 5.00 * years) / 100
+        years = Decimal(str(obj.timeline_months)) / Decimal('12')  
+        return (obj.requested_amount * Decimal('5.00') * years) / Decimal('100')
 
     def get_total_repayment(self, obj):
         

@@ -5,7 +5,6 @@ from dateutil.relativedelta import relativedelta
 from users.models import User
 from transaction.models import Transaction
 
-
 class LoanAccount(models.Model):
     loan_id = models.BigAutoField(primary_key=True)  
 
