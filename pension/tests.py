@@ -12,11 +12,11 @@ class PensionProviderModelTests(TestCase):
             payBill_number='1234567890',
             status='Active'
         )
-        self.assertEqual(pension_provider.name, 'Test Pension')
-        self.assertEqual(pension_provider.payBill_number, '1234567890')
-        self.assertEqual(pension_provider.status, 'Active')
-        self.assertIsNotNone(pension_provider.created_at)
-        self.assertIsNotNone(pension_provider.updated_at)
+        self.assertEqual(PensionProvider.name, 'Test Pension')
+        self.assertEqual(PensionProvider.payBill_number, '1234567890')
+        self.assertEqual(PensionProvider.status, 'Active')
+        self.assertIsNotNone(PensionProvider.created_at)
+        self.assertIsNotNone(PensionProvider.updated_at)
 
     def test_pension_provider_str(self):
         pension_provider = PensionProvider.objects.create(name='Test Pension', payBill_number='123', status='Active')
