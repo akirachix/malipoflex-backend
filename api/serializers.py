@@ -64,13 +64,15 @@ class LoanAccountSerializer(serializers.ModelSerializer):
 class GuarantorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Guarantor
-        fields = ['pk', 'loan']  
+        fields = ['pk', 'loan', 'member']
         read_only_fields = ['pk']  
 
-    def validate_loan(self, value):
-        if not value:
-            raise serializers.ValidationError("Loan field is required")
-        return value
+    def validate(self, data):
+        if not LoanAccount.objects.filter(id=data['loan'].id).exists():
+            raise serializers.ValidationError("Invalid loan ID")
+        if not Member.objects.filter(id=data['member'].id).exists():
+            raise serializers.ValidationError("Invalid member ID")
+        return data
 
 
 

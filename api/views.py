@@ -30,10 +30,7 @@ from .serializers import UserSerializer
 from rest_framework.decorators import action, api_view
 from django.utils import timezone
 from datetime import timedelta
-
-
-
-
+from rest_framework.exceptions import ValidationError
 
 
 class LoanAccountViewSet(viewsets.ModelViewSet):
@@ -73,6 +70,12 @@ class LoanAccountViewSet(viewsets.ModelViewSet):
 class GuarantorViewSet(viewsets.ModelViewSet):
     queryset = Guarantor.objects.all()
     serializer_class = GuarantorSerializer
+
+
+
+
+
+
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
