@@ -1,13 +1,13 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from .models import Pension, PensionAccount
+from .models import PensionProvider, PensionAccount
 
 User = get_user_model()
 
-class PensionModelTests(TestCase):
+class PensionProviderModelTests(TestCase):
 
-    def test_create_pension(self):
-        pension = Pension.objects.create(
+    def test_create_pension_provider(self):
+        pension_provider = PensionProvider.objects.create(
             name='Test Pension',
             payBill_number='1234567890',
             status='Active'
