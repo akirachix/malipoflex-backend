@@ -6,8 +6,8 @@ User = get_user_model()
 
 class PensionProviderModelTests(TestCase):
 
-    def test_create_pension_provider(self):
-        pension_provider = PensionProvider.objects.create(
+    def test_create_pension(self):
+        pension = Pension.objects.create(
             name='Test Pension',
             payBill_number='1234567890',
             status='Active'
@@ -21,7 +21,6 @@ class PensionProviderModelTests(TestCase):
     def test_pension_provider_str(self):
         pension_provider = PensionProvider.objects.create(name='Test Pension', payBill_number='123', status='Active')
         self.assertEqual(str(pension_provider), 'Test Pension')
-
 
 
 class PensionAccountModelTests(TestCase):
