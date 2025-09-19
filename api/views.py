@@ -71,18 +71,12 @@ class GuarantorViewSet(viewsets.ModelViewSet):
     queryset = Guarantor.objects.all()
     serializer_class = GuarantorSerializer
 
-
-
-
-
-
-
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
-        if 'id' not in response.data:
-            logger.error(f"Response data missing 'id':{response.data}")
+        if 'pk' not in response.data:
+            logger.error(f"Response data missing 'pk':{response.data}")
             raise Exception("Failed to retrieve guarantor ID")
-        guarantor = self.get_queryset().get(id=response.data['id'])
+        guarantor = self.get_queryset().get(id=response.data['pk'])
         notification_msg = (
             f"You’ve been requested to guarantee a loan of KES {guarantor.loan.requested_amount:,.2f} "
             f"for {guarantor.loan.member.first_name}. Please respond in the app."
@@ -90,6 +84,7 @@ class GuarantorViewSet(viewsets.ModelViewSet):
         
         response.data['notification'] = notification_msg
         return response
+
 
     @action(detail=True, methods=['post'])
     def respond(self, request, pk=None):
