@@ -1,29 +1,31 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from .models import Pension, PensionAccount
+from .models import PensionProvider, PensionAccount
 
 User = get_user_model()
 
-class PensionModelTests(TestCase):
+class PensionProviderModelTests(TestCase):
 
-    def test_create_pension(self):
-        pension = Pension.objects.create(
+    def test_create_pension_provider(self):
+        pension_provider = PensionProvider.objects.create(
             name='Test Pension',
             payBill_number='1234567890',
             status='Active'
         )
-        self.assertEqual(pension.name, 'Test Pension')
-        self.assertEqual(pension.payBill_number, '1234567890')
-        self.assertEqual(pension.status, 'Active')
-        self.assertIsNotNone(pension.created_at)
-        self.assertIsNotNone(pension.updated_at)
+        self.assertEqual(pension_provider.name, 'Test Pension')
+        self.assertEqual(pension_provider.payBill_number, '1234567890')
+        self.assertEqual(pension_provider.status, 'Active')
+        self.assertIsNotNone(pension_provider.created_at)
+        self.assertIsNotNone(pension_provider.updated_at)
 
-    def test_pension_str(self):
-        pension = Pension.objects.create(name='Test Pension', payBill_number='123', status='Active')
-        self.assertEqual(str(pension), 'Test Pension')
+    def test_pension_provider_str(self):
+        pension_provider = PensionProvider.objects.create(name='Test Pension', payBill_number='123', status='Active')
+        self.assertEqual(str(pension_provider), 'Test Pension')
+
 
 
 class PensionAccountModelTests(TestCase):
+    
 
     def setUp(self):
         self.user = User.objects.create_user(
