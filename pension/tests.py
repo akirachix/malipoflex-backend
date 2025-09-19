@@ -7,7 +7,7 @@ User = get_user_model()
 class PensionProviderModelTests(TestCase):
 
     def test_create_pension_provider(self):
-        pension = pensionProvider.objects.create(
+        pension = PensionProvider.objects.create(
             name='Test Pension',
             payBill_number='1234567890',
             status='Active'
