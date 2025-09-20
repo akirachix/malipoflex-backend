@@ -271,6 +271,7 @@ class SavingsAccountViewSet(viewsets.ModelViewSet):
 
 
 class SavingsContributionViewSet(viewsets.ModelViewSet):
+    queryset = SavingsContribution.objects.all()
     serializer_class = SavingsContributionSerializer
 
     def get_queryset(self):
@@ -278,6 +279,9 @@ class SavingsContributionViewSet(viewsets.ModelViewSet):
             return SavingsContribution.objects.filter(member=self.request.user)
         else:
             return SavingsContribution.objects.none() 
+
+            
+
 
 
 class VSLAAccountViewSet(viewsets.ModelViewSet):
