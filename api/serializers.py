@@ -151,19 +151,21 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     phone_number = serializers.CharField()
     password = serializers.CharField(write_only=True)
-
+    firebase_token = serializers.CharField(required=False, allow_blank=True)
     def validate(self, data):
         phone_number = data.get("phone_number")
         password = data.get("password")
-
+        firebase_token = data.get("firebase_token")
         if not phone_number or not password:
             raise serializers.ValidationError("Must include 'phone_number' and 'password'.")
         user = authenticate(phone_number=phone_number, password=password)
         if not user:
             raise serializers.ValidationError("Invalid phone number or password")
-
         if user.user_type not in ["member","manager"]:
             raise serializers.ValidationError("User type not allowed to login")
+        if firebase_token:
+            user.firebase_token = firebase_token
+            user.save()
         data['user'] = user
         return data
 
@@ -286,18 +288,8 @@ class SavingsContributionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SavingsContribution
-        fields = [
-            'id',
-            'member',
-            'saving',
-            'contributed_amount',
-            'pension_amount',
-            'vsla_amount',
-            'transaction_id_c2b',
-            'transaction_id_b2b',
-            'created_at',
-            'completed_at',
-        ]
+        fields = ['id','member','saving','contributed_amount','pension_amount','vsla_amount','transaction_id_c2b','transaction_id_b2b','created_at','completed_at',]
+
 
     def validate_contributed_amount(self, value):
         if isinstance(value, str):
@@ -308,26 +300,6 @@ class SavingsContributionSerializer(serializers.ModelSerializer):
             return Decimal(str(value))
         except (InvalidOperation, ValueError, TypeError):
             raise serializers.ValidationError("Amount must be a valid number.")
-
-    def validate_pension_amount(self, value):
-        if isinstance(value, str):
-            value = value.strip()
-            if value == '':
-                return Decimal('0.00')
-        try:
-            return Decimal(str(value))
-        except (InvalidOperation, ValueError, TypeError):
-            raise serializers.ValidationError("Pension amount must be a valid number.")
-
-    def validate_vsla_amount(self, value):
-        if isinstance(value, str):
-            value = value.strip()
-            if value == '':
-                return Decimal('0.00')
-        try:
-            return Decimal(str(value))
-        except (InvalidOperation, ValueError, TypeError):
-            raise serializers.ValidationError("VSLA amount must be a valid number.")
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -350,10 +322,20 @@ class VSLAAccountSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["vsla_id", "created_at", "updated_at"]
 
+    def validate_vsla_amount(self, value):
+        if isinstance(value, str):
+            value = value.strip()
+            if value == '':
+                return Decimal('0.00')
+        try:
+            return Decimal(str(value))
+        except (InvalidOperation, ValueError, TypeError):
+            raise serializers.ValidationError("VSLA amount must be a valid number.")
 
 
 
-class PensionSerializer(serializers.ModelSerializer):
+
+class PensionProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = PensionProvider
         fields = ['id', 'name', 'payBill_number', 'status']
@@ -401,9 +383,26 @@ class PensionAccountSerializer(serializers.ModelSerializer):
         return instance
 
 
+    def validate_pension_amount(self, value):
+        if isinstance(value, str):
+            value = value.strip()
+            if value == '':
+                return Decimal('0.00')
+        try:
+            return Decimal(str(value))
+        except (InvalidOperation, ValueError, TypeError):
+            raise serializers.ValidationError("Pension amount must be a valid number.")
+
+
 class PolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = Policy
         fields = '__all__'
 
         fields = "__all__"
+
+class RegisterFirebaseTokenSerializer(serializers.Serializer):
+    firebase_token = serializers.CharField(max_length=255, required=True)
+class SendNotificationSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=255, required=True)
+    body = serializers.CharField(required=True)
