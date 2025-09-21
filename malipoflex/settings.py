@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 load_dotenv()
 import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
-FIREBASE_CREDENTIALS_PATH = '/home/student/malipoflex-backend/malipoflex/credentials/firebase_credentials.json'
+firebase_credentials_path = os.environ.get('FIREBASE_CREDENTIALS_PATH')
 print(f"BASE_DIR: {BASE_DIR}")
 print(f"FIREBASE_CREDENTIALS_PATH: {FIREBASE_CREDENTIALS_PATH}")
 
