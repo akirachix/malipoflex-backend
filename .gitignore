@@ -11,3 +11,4 @@ staticfiles/
 .history
 .idea/
 .vscode/
+malipoflex/credentials/firebasecredentials.json
