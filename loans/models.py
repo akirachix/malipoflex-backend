@@ -8,6 +8,9 @@ from transaction.models import Transaction
 class LoanAccount(models.Model):
     loan_id = models.BigAutoField(primary_key=True)  
 
+    def __str__(self):
+        return f"Loan for {self.member_full_name} - {self.requested_amount}"
+
     loan_type_choices = [
         ("emergency", "Emergency"),
         ("personal", "Personal"),

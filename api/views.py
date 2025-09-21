@@ -32,12 +32,17 @@ from django.utils import timezone
 from datetime import timedelta
 from users.notification import send_notification_to_user
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+
+
 
 
 class LoanAccountViewSet(viewsets.ModelViewSet):
     queryset = LoanAccount.objects.all()
     serializer_class = LoanAccountSerializer
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [AllowAny]
+ 
 
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
