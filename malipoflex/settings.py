@@ -13,11 +13,29 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-load_dotenv()
-import dj_database_url
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv()
+
+def get_env_variable(key):
+    value = os.getenv(key)
+    if value is None:
+        raise EnvironmentError(f"Required environment variable '{key}' not set.")
+    return value
+    
+FIREBASE_CONFIG = {
+    "type": get_env_variable("MYFIRE_TYPE"),
+    "project_id": get_env_variable("MYFIRE_PROJECT_ID"),
+    "private_key_id": get_env_variable("MYFIRE_PRIVATE_KEY_ID"),
+    "private_key": get_env_variable("MYFIRE_PRIVATE_KEY").replace("\\n", "\n"),
+    "client_email": get_env_variable("MYFIRE_CLIENT_EMAIL"),
+    "client_id": get_env_variable("MYFIRE_CLIENT_ID"),
+    "auth_uri": get_env_variable("MYFIRE_AUTH_URI"),
+    "token_uri": get_env_variable("MYFIRE_TOKEN_URI"),
+    "auth_provider_x509_cert_url": get_env_variable("MYFIRE_AUTH_PROVIDER_CERT_URL"),
+    "client_x509_cert_url": get_env_variable("MYFIRE_CLIENT_CERT_URL"),
+    "universe_domain": get_env_variable("MYFIRE_UNIVERSE_DOMAIN"),
+}
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,12 +44,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-# Application definition
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -42,8 +59,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'corsheaders',
-    'loans',    
-    'api',  
+    'loans',
+    'api',
     'rest_framework.authtoken',
     'transaction',
     'rest_framework',
@@ -57,9 +74,8 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', 
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
-
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -71,8 +87,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-
 ]
+
 CORS_ALLOW_ALL_ORIGIN = True
 
 ROOT_URLCONF = "malipoflex.urls"
@@ -94,12 +110,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "malipoflex.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+import dj_database_url
 
 DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
 if not os.getenv("DATABASE_URL"):
+    BASE_DIR = Path(__file__).resolve().parent.parent
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -107,53 +122,32 @@ if not os.getenv("DATABASE_URL"):
         }
     }
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
-
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = 'users.User'
 
 
 SPECTACULAR_SETTINGS = {
@@ -166,25 +160,19 @@ SPECTACULAR_SETTINGS = {
     'REDOC_DIST': 'SIDECAR',
 }
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_USER_MODEL = 'users.User'
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv()  
-
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))  
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 DARAJA_CONSUMER_KEY = os.getenv('DARAJA_CONSUMER_KEY')
 DARAJA_CONSUMER_SECRET = os.getenv('DARAJA_CONSUMER_SECRET')
 DARAJA_SHORTCODE = os.getenv('DARAJA_SHORTCODE')
 DARAJA_PASSKEY = os.getenv('DARAJA_PASSKEY')
 DARAJA_CALLBACK_URL = os.getenv('DARAJA_CALLBACK_URL')
+

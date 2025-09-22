@@ -36,6 +36,8 @@ urlpatterns = [
     path('api/resetPassword/', ResetPasswordView.as_view(), name='reset-password'),    
     path('api/resetPassword/', ResetPasswordView.as_view(), name='reset-password'),
     path('api/expireGuarantors/', views.expire_guarantors_manual, name='expire_guarantors'), 
+    path('register-token/', views.register_firebase_token, name='register_firebase_token'),
+    path('send-notification/', views.send_notification, name='send_notification'),
 ]
 
 
