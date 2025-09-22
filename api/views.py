@@ -275,9 +275,6 @@ class SavingsContributionViewSet(viewsets.ModelViewSet):
     serializer_class = SavingsContributionSerializer
 
 
-
-
-
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
@@ -290,11 +287,6 @@ class SavingsContributionViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
  
-
-
-
-
-            
 class VSLAAccountViewSet(viewsets.ModelViewSet):
     queryset = VSLA_Account.objects.all()
     serializer_class = VSLAAccountSerializer

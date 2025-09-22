@@ -15,15 +15,15 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 import dj_database_url
+import environ
 import os
-from dotenv import load_dotenv
-load_dotenv()
-import dj_database_url
-BASE_DIR = Path(__file__).resolve().parent.parent
-firebase_credentials_path = os.environ.get('FIREBASE_CREDENTIALS_PATH')
-print(f"BASE_DIR: {BASE_DIR}")
-print(f"FIREBASE_CREDENTIALS_PATH: {FIREBASE_CREDENTIALS_PATH}")
 
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+FIREBASE_CREDENTIALS_PATH = env('FIREBASE_CREDENTIALS_PATH')
+print(f"FIREBASE_CREDENTIALS_PATH: {FIREBASE_CREDENTIALS_PATH}")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
