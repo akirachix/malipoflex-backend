@@ -1,48 +1,39 @@
+import logging
 from django.shortcuts import render
-from rest_framework import viewsets
-from loans.models import LoanAccount, Guarantor, LoanRepayment
-from .serializers import LoanAccountSerializer, GuarantorSerializer, LoanRepaymentSerializer
-from rest_framework.permissions import IsAuthenticated
-from transaction.models import Transaction 
-from .serializers import TransactionSerializer 
-from users.models import Member
-from savings.models import SavingsAccount
-from savings.models import SavingsContribution
-from vsla.models import VSLA_Account
-from .serializers import (
-    SavingsAccountSerializer,
-    SavingsContributionSerializer,
-    VSLAAccountSerializer,
-    PensionAccountSerializer,
-)
-from rest_framework.permissions import AllowAny
-from rest_framework.authentication import BasicAuthentication
 from rest_framework import viewsets, status, generics
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from .serializers import PensionProviderSerializer, PolicySerializer
-from pension.models import PensionProvider, PensionAccount
-from policy.models import Policy
-from rest_framework.authtoken.models import Token
-from django_filters.rest_framework import DjangoFilterBackend
-from users.models import User
-from .serializers import UserRegisterSerializer, UserLoginSerializer, UserProfileSerializer,ForgotPasswordSerializer,ResetPasswordSerializer,VerifyOTPSerializer
-from .serializers import UserSerializer
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes, authentication_classes
 from django.utils import timezone
 from datetime import timedelta
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.authtoken.models import Token
 from users.notification import send_notification_to_user
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
+from loans.models import LoanAccount, Guarantor, LoanRepayment
+from transaction.models import Transaction
+from users.models import Member, User
+from savings.models import SavingsAccount, SavingsContribution
+from vsla.models import VSLA_Account
+from pension.models import PensionProvider, PensionAccount
+from policy.models import Policy
 
+from .serializers import (
+    LoanAccountSerializer, GuarantorSerializer, LoanRepaymentSerializer,
+    TransactionSerializer, SavingsAccountSerializer, SavingsContributionSerializer,
+    VSLAAccountSerializer, PensionAccountSerializer, PensionProviderSerializer,
+    PolicySerializer, UserRegisterSerializer, UserLoginSerializer, UserProfileSerializer,
+    ForgotPasswordSerializer, ResetPasswordSerializer, VerifyOTPSerializer, UserSerializer,
+    RegisterFirebaseTokenSerializer, SendNotificationSerializer
+)
+
+logger = logging.getLogger(__name__)
 
 
 class LoanAccountViewSet(viewsets.ModelViewSet):
     queryset = LoanAccount.objects.all()
     serializer_class = LoanAccountSerializer
     permission_classes = [AllowAny]
- 
 
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
@@ -56,7 +47,6 @@ class LoanAccountViewSet(viewsets.ModelViewSet):
         if action == 'approve':
             loan.loan_status = 'APPROVED'
             notification = "Your loan has been approved. Funds will be sent shortly."
-
         elif action == 'reject':
             loan.loan_status = 'REJECTED'
             loan.rejection_reason = reason
@@ -81,12 +71,12 @@ class GuarantorViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         guarantor = self.get_queryset().get(id=response.data['id'])
-        
+
         notification_msg = (
             f"You’ve been requested to guarantee a loan of KES {guarantor.loan.requested_amount:,.2f} "
             f"for {guarantor.loan.member.first_name}. Please respond in the app."
         )
-        
+
         response.data['notification'] = notification_msg
         return response
 
@@ -126,7 +116,6 @@ class GuarantorViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def check_status(self, request, pk=None):
-       
         guarantor = self.get_object()
         data = {
             "id": guarantor.id,
@@ -147,8 +136,7 @@ class GuarantorViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
-def expire_guarantors_manual(GenericAPIView):
-    
+def expire_guarantors_manual(request):
     expired_count = Guarantor.objects.filter(
         status='Pending',
         created_at__lt=timezone.now() - timedelta(hours=24)
@@ -161,12 +149,11 @@ def expire_guarantors_manual(GenericAPIView):
         "message": f"Successfully expired {expired_count} guarantor request(s).",
         "status": "success"
     })
+
+
 class LoanRepaymentViewSet(viewsets.ModelViewSet):
     queryset = LoanRepayment.objects.all()
     serializer_class = LoanRepaymentSerializer
-    
-
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -183,6 +170,7 @@ class RegisterView(generics.CreateAPIView):
 
 class LoginView(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
+
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -192,7 +180,7 @@ class LoginView(generics.GenericAPIView):
         return Response({
             "token": str(token.key),
             "user": {
-                "user_id": str(user.id),  
+                "user_id": str(user.id),
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "user_type": user.user_type,
@@ -200,11 +188,14 @@ class LoginView(generics.GenericAPIView):
             }
         })
 
+
 class ProfileView(generics.RetrieveAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
+
     def get_object(self):
         return self.request.user
+
 
 class ForgotPasswordView(generics.GenericAPIView):
     serializer_class = ForgotPasswordSerializer
@@ -232,28 +223,25 @@ class VerifyOTPView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({"message": "OTP verified successfully"}, status=status.HTTP_200_OK)
-        return Response({"message": "OTP verified successfully"}, status=status.HTTP_200_OK)
+
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
-   
+
+
 class SavingsAccountViewSet(viewsets.ModelViewSet):
     queryset = SavingsAccount.objects.select_related("member").all()
     serializer_class = SavingsAccountSerializer
     lookup_field = "saving_id"
 
-
-    from rest_framework.decorators import action
-
     @action(detail=False, methods=['post'])
     def apply_interest(self, request):
-        
         accounts = self.get_queryset()
         results = []
 
         for account in accounts:
-            interest = (account.member_account_balance * 2.50) / 100  
+            interest = (account.member_account_balance * 2.50) / 100
             account.member_account_balance += interest
             account.interest_incurred += interest
             account.save()
@@ -274,7 +262,6 @@ class SavingsContributionViewSet(viewsets.ModelViewSet):
     queryset = SavingsContribution.objects.all()
     serializer_class = SavingsContributionSerializer
 
-
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
@@ -286,7 +273,12 @@ class SavingsContributionViewSet(viewsets.ModelViewSet):
         logger.debug(f"Queryset: {self.get_queryset()}")
         return super().list(request, *args, **kwargs)
 
- 
+
+
+
+        
+
+
 class VSLAAccountViewSet(viewsets.ModelViewSet):
     queryset = VSLA_Account.objects.all()
     serializer_class = VSLAAccountSerializer
@@ -296,7 +288,6 @@ class VSLAAccountViewSet(viewsets.ModelViewSet):
 class PensionViewSet(viewsets.ModelViewSet):
     queryset = PensionProvider.objects.all()
     serializer_class = PensionProviderSerializer
-
 
 
 class PensionProviderListView(generics.ListAPIView):
@@ -309,7 +300,6 @@ class PolicyViewSet(viewsets.ModelViewSet):
     serializer_class = PolicySerializer
 
 
-
 class PensionAccountViewSet(viewsets.ModelViewSet):
     serializer_class = PensionAccountSerializer
 
@@ -317,7 +307,7 @@ class PensionAccountViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated:
             return PensionAccount.objects.filter(member=self.request.user)
         else:
-            return PensionAccount.objects.none() 
+            return PensionAccount.objects.none()
 
 
 @api_view(['POST'])
@@ -330,6 +320,8 @@ def register_firebase_token(request):
         request.user.save()
         return Response({"status": "Firebase token registered"}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @authentication_classes([])
 @permission_classes([AllowAny])
@@ -347,5 +339,3 @@ def send_notification(request):
         else:
             return Response({"error": "User has no Firebase token"}, status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-   
