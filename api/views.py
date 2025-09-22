@@ -262,21 +262,6 @@ class SavingsContributionViewSet(viewsets.ModelViewSet):
     queryset = SavingsContribution.objects.all()
     serializer_class = SavingsContributionSerializer
 
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_authenticated:
-            return SavingsContribution.objects.filter(member=user)
-        else:
-            return SavingsContribution.objects.none()
-
-    def list(self, request, *args, **kwargs):
-        logger.debug(f"Queryset: {self.get_queryset()}")
-        return super().list(request, *args, **kwargs)
-
-
-
-
-        
 
 
 class VSLAAccountViewSet(viewsets.ModelViewSet):
@@ -301,14 +286,10 @@ class PolicyViewSet(viewsets.ModelViewSet):
 
 
 class PensionAccountViewSet(viewsets.ModelViewSet):
+    queryset = VSLA_Account.objects.all()
     serializer_class = PensionAccountSerializer
 
-    def get_queryset(self):
-        if self.request.user.is_authenticated:
-            return PensionAccount.objects.filter(member=self.request.user)
-        else:
-            return PensionAccount.objects.none()
-
+  
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
