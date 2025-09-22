@@ -11,6 +11,8 @@ jobs:
       matrix:
         python-version: [3.13.4]
     steps:
+     env:
+      MYFIRE_TYPE: "service_account"
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
