@@ -22,20 +22,21 @@ def get_env_variable(key):
     if value is None:
         raise EnvironmentError(f"Required environment variable '{key}' not set.")
     return value
-
+    
 FIREBASE_CONFIG = {
-    "type": get_env_variable("FIREBASE_TYPE"),
-    "project_id": get_env_variable("FIREBASE_PROJECT_ID"),
-    "private_key_id": get_env_variable("FIREBASE_PRIVATE_KEY_ID"),
-    "private_key": get_env_variable("FIREBASE_PRIVATE_KEY").replace("\\n", "\n"),
-    "client_email": get_env_variable("FIREBASE_CLIENT_EMAIL"),
-    "client_id": get_env_variable("FIREBASE_CLIENT_ID"),
-    "auth_uri": get_env_variable("FIREBASE_AUTH_URI"),
-    "token_uri": get_env_variable("FIREBASE_TOKEN_URI"),
-    "auth_provider_x509_cert_url": get_env_variable("FIREBASE_AUTH_PROVIDER_CERT_URL"),
-    "client_x509_cert_url": get_env_variable("FIREBASE_CLIENT_CERT_URL"),
-    "universe_domain": get_env_variable("FIREBASE_UNIVERSE_DOMAIN"),
+    "type": get_env_variable("MYFIRE_TYPE"),
+    "project_id": get_env_variable("MYFIRE_PROJECT_ID"),
+    "private_key_id": get_env_variable("MYFIRE_PRIVATE_KEY_ID"),
+    "private_key": get_env_variable("MYFIRE_PRIVATE_KEY").replace("\\n", "\n"),
+    "client_email": get_env_variable("MYFIRE_CLIENT_EMAIL"),
+    "client_id": get_env_variable("MYFIRE_CLIENT_ID"),
+    "auth_uri": get_env_variable("MYFIRE_AUTH_URI"),
+    "token_uri": get_env_variable("MYFIRE_TOKEN_URI"),
+    "auth_provider_x509_cert_url": get_env_variable("MYFIRE_AUTH_PROVIDER_CERT_URL"),
+    "client_x509_cert_url": get_env_variable("MYFIRE_CLIENT_CERT_URL"),
+    "universe_domain": get_env_variable("MYFIRE_UNIVERSE_DOMAIN"),
 }
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
